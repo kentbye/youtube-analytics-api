@@ -273,6 +273,7 @@ var lastMonth = new Date(today.getTime() - ONE_MONTH_IN_MILLISECONDS);
 		  var averageViewsPerDay = Math.round((this.statistics.viewCount/daysPublished)*1000)/1000;
 		  outputData[i] += "|" + daysPublished + "|" + averageViewsPerDay;
           
+          // If outputGraphList is true, then it'll display a graphs of views, estimatedMinutesWatched, averageViewDuration & averageViewPercentage for a selected video.
 		  var outputGraphList = false;
 		  if  (outputGraphList) {
 	         // Create a new <li> element that contains an <a> element.
@@ -299,7 +300,8 @@ var lastMonth = new Date(today.getTime() - ONE_MONTH_IN_MILLISECONDS);
         });
 
         if (videoList.children().length == 0) {
-          displayMessage('Your channel does not have any videos that have been viewed.');
+          // displayMessage('Your channel does not have any videos that have been viewed.');
+          displayMessage('Graphing is disabled. Set outputGraphList to true to see graphs. Or it could be that your channel does not have any videos that have been viewed');
         }
       }
     });
