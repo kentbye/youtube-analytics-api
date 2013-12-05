@@ -13,9 +13,8 @@ var lastMonth = new Date(today.getTime() - ONE_MONTH_IN_MILLISECONDS);
 
 (function() {
   // Retrieve your client ID from the Google APIs Console at
-  // https://code.google.com/apis/console.
-  // PuppetLabsInc CHANNEL_ID is UCPfMWIY-qNbLhIrbZm2BFMQ
-  var OAUTH2_CLIENT_ID = "567642739825-0dgv7kgkq807hbsfajiug9nkn41l87t6.apps.googleusercontent.com"
+  // https://cloud.google.com/console#/project.
+  var OAUTH2_CLIENT_ID = "############-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.apps.googleusercontent.com"
   var OAUTH2_SCOPES = [
     'https://www.googleapis.com/auth/yt-analytics.readonly',
     'https://www.googleapis.com/auth/youtube.readonly'
@@ -125,7 +124,7 @@ var lastMonth = new Date(today.getTime() - ONE_MONTH_IN_MILLISECONDS);
     var request = gapi.client.youtube.playlistItems.list({
       playlistId: listId,
       part: 'snippet',
-      maxResults: 30, // TODO: Change back to 5 or up to 50.
+      maxResults: 5, // TODO: Change back to 5 or up to 50.
       pageToken: paginationToken   
     });
 
@@ -245,9 +244,10 @@ var lastMonth = new Date(today.getTime() - ONE_MONTH_IN_MILLISECONDS);
           var totalSeconds = 0;
           for (var x = lengthDurationArray; x > 1 ; x--) {
           	currentInteger[x] = parseInt(durationSeconds[x]);
-            if(currentInteger[x]) {
+          	console.log(durationSeconds[x], currentInteger[x])
+            if(currentInteger[x] || currentInteger[x]==0) {
               // If the next character is a number, then multiply by 10
-              if(currentInteger[x+1]) {
+              if(currentInteger[x+1] || currentInteger[x+1]==0) {
               	multiplier *= 10;
               }
               totalSeconds += currentInteger[x]*multiplier;
