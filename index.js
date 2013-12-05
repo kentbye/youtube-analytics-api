@@ -124,7 +124,7 @@ var lastMonth = new Date(today.getTime() - ONE_MONTH_IN_MILLISECONDS);
     var request = gapi.client.youtube.playlistItems.list({
       playlistId: listId,
       part: 'snippet',
-      maxResults: 5, // TODO: Change back to 5 or up to 50.
+      maxResults: 50, // TODO: Change back to 5 or up to 50.
       pageToken: paginationToken   
     });
 
