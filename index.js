@@ -244,8 +244,7 @@ var lastMonth = new Date(today.getTime() - ONE_MONTH_IN_MILLISECONDS);
           var totalSeconds = 0;
           for (var x = lengthDurationArray; x > 1 ; x--) {
           	currentInteger[x] = parseInt(durationSeconds[x]);
-          	console.log(durationSeconds[x], currentInteger[x])
-            if(currentInteger[x] || currentInteger[x]==0) {
+          	if(currentInteger[x] || currentInteger[x]==0) {
               // If the next character is a number, then multiply by 10
               if(currentInteger[x+1] || currentInteger[x+1]==0) {
               	multiplier *= 10;
