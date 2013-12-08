@@ -88,11 +88,11 @@ Note that LINES TERMINATED BY changes depending on where you copy from. It's `\r
     
 
 # Sample MySQL calls
-**Show the first two months of engagement data for public videos published within the last 240 days (videos less than 15 minutes) ordered by the best average view percentage**
+Show the first two months of engagement data for public videos published within the last 240 days (videos less than 15 minutes) ordered by the best average view percentage
 
     SELECT videos.title, videos.viewCountTotal, engagement.views, engagement.averageViewPercentage, engagement.timePeriod, videos.daysPublished FROM engagement INNER JOIN videos ON engagement.id = videos.id WHERE videos.daysPublished < 240 AND engagement.timePeriod = 60 AND videos.privacyStatus ='public' AND durationSeconds < 900 ORDER BY engagement.averageViewPercentage DESC;
 
-**Show the first two week's engagement data for public videos published within the last 60 days (videos less than 15 minutes)**
+Show the first two week's engagement data for public videos published within the last 60 days (videos less than 15 minutes)
 
     SELECT videos.title, videos.viewCountTotal, engagement.timePeriod, engagement.views, engagement.averageViewPercentage, videos.daysPublished FROM engagement INNER JOIN videos ON engagement.id = videos.id WHERE videos.daysPublished < 240 AND engagement.timePeriod = 14 AND videos.privacyStatus ='public' AND durationSeconds < 900 ORDER BY engagement.averageViewPercentage DESC;
 
