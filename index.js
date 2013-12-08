@@ -4,6 +4,8 @@ var engagementCount = 0;
 var videoCount;
 var uploadsListId;
 var columnTitles = "";
+var publishedDate = Array();
+var numberOfTimePeriods = 4;
 
 // To use a different date range, modify the ONE_MONTH_IN_MILLISECONDS
 // variable to a different millisecond delta as desired.
@@ -14,7 +16,8 @@ var lastMonth = new Date(today.getTime() - ONE_MONTH_IN_MILLISECONDS);
 (function() {
   // Retrieve your client ID from the Google APIs Console at
   // https://cloud.google.com/console#/project.
-  var OAUTH2_CLIENT_ID = "############-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.apps.googleusercontent.com"
+  // var OAUTH2_CLIENT_ID = "############-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX.apps.googleusercontent.com"
+  var OAUTH2_CLIENT_ID = "567642739825-0dgv7kgkq807hbsfajiug9nkn41l87t6.apps.googleusercontent.com"
   var OAUTH2_SCOPES = [
     'https://www.googleapis.com/auth/yt-analytics.readonly',
     'https://www.googleapis.com/auth/youtube.readonly'
@@ -109,7 +112,7 @@ var lastMonth = new Date(today.getTime() - ONE_MONTH_IN_MILLISECONDS);
         // for a playlist of videos uploaded to the authenticated user's channel.
         uploadsListId = response.items[0].contentDetails.relatedPlaylists.uploads;
         // Use the uploads playlist ID to retrieve the list of uploaded videos. 
-        var pageToken = ''; // Initial pageToken page. Default is set to '';
+        var pageToken = ''; // Initial pageToken page. Default is set to '' Or set it like 'CG4QAA'
         getPlaylistItems(uploadsListId, pageToken);
       } 
     });
@@ -142,6 +145,7 @@ var lastMonth = new Date(today.getTime() - ONE_MONTH_IN_MILLISECONDS);
           
           // Only show the next pagination links if there's more videos.
           nextPageToken = response.result.nextPageToken;
+          // console.log(nextPageToken) // Write out the next page token if you wanted to start from a specific page
           if (nextPageToken) {
 	        var aElement = $('<a>');
 	        aElement.attr('href', '#');
@@ -177,12 +181,6 @@ var lastMonth = new Date(today.getTime() - ONE_MONTH_IN_MILLISECONDS);
           // we can retrieve info about each video.
           getVideoMetadata(videoIds);
           
-          // Loop through and retrieve the engagement metrics data for each video
-          var a = 0;
-          for (var a in videoIds) {
-          	// Input the curent video, what order since it's executed asynchronously, start date of last month
-            queryVideoEngagement(videoIds[a], a, formatDateString(lastMonth));
-          }
           
         } else {
           displayMessage('There are no videos in your channel.');
@@ -202,8 +200,8 @@ var lastMonth = new Date(today.getTime() - ONE_MONTH_IN_MILLISECONDS);
       part: 'id,snippet,statistics,status,contentDetails'
     });
     
-    // See how many videos to asychronously query for the engagement metric data 
-    videoCount = videoIds.length;
+    // See how many videos to asychronously query for the engagement metric data
+    videoCount = videoIds.length * numberOfTimePeriods;
     
     // Write the video results to the screen and link to be able to look at a graph of data
     request.execute(function(response) {
@@ -212,9 +210,16 @@ var lastMonth = new Date(today.getTime() - ONE_MONTH_IN_MILLISECONDS);
       } else {
         // Get the jQuery wrapper for #video-list once outside the loop.
         var videoList = $('#video-list');
+        $('#video-engagement-07').empty();
+        $('#video-engagement-14').empty();
+        $('#video-engagement-30').empty();
+        $('#video-engagement-60').empty();
+        
         // Clear out previous results to show new next or previous paginated results
         videoList.empty();
+       
         i = 0;
+
         $.each(response.items, function() {
           // Exclude videos that don't have any views, since those videos
           // will not have any interesting viewcount analytics data.
@@ -222,8 +227,8 @@ var lastMonth = new Date(today.getTime() - ONE_MONTH_IN_MILLISECONDS);
             return;
           }
           
-		  // See what variables are available via console.log(this);
-		  // console.log(this);
+		      // See what variables are available
+		      // console.log(this);
 	  
           var title = this.snippet.title;
           var videoId = this.id;
@@ -233,7 +238,7 @@ var lastMonth = new Date(today.getTime() - ONE_MONTH_IN_MILLISECONDS);
           var publishedDateTime = this.snippet.publishedAt.substring(0, this.snippet.publishedAt.length - 5).split('T');
           // Dump the id, snippet, statistics, status, & contentDetails of this video
           
-		  outputData[i] = this.snippet.title + '|' + this.statistics.viewCount + '|' + this.statistics.likeCount + '|' + this.statistics.favoriteCount + '|' + this.statistics.commentCount +'|' + this.statistics.dislikeCount + '|' + this.id + '|' + publishedDateTime[0] + '|' + publishedDateTime[1] + '|' + this.snippet.tags + '|' + this.snippet.categoryId + '|' + this.status.privacyStatus + '|' + this.contentDetails.duration;
+		      outputData[i] = this.snippet.title + '|' + this.id + '|' + this.statistics.viewCount + '|' + this.statistics.likeCount + '|' + this.statistics.favoriteCount + '|' + this.statistics.commentCount +'|' + this.statistics.dislikeCount + '|' + publishedDateTime[0] + '|' + publishedDateTime[1] + '|' + this.snippet.tags + '|' + this.snippet.categoryId + '|' + this.status.privacyStatus + '|' + this.contentDetails.duration;
 
 		  // YouTube displays the time in this format: PT9M52S. Convert it to seconds.
           var durationSeconds = this.contentDetails.duration;
@@ -268,10 +273,10 @@ var lastMonth = new Date(today.getTime() - ONE_MONTH_IN_MILLISECONDS);
           
           // Calculate how many days the video has been published
           var currentDate = new Date();
-          var publishedDate = new Date(publishedDateTime[0]);
-		  var daysPublished = Math.round((currentDate.getTime()-publishedDate.getTime())/(1000*24*60*60));
-		  var averageViewsPerDay = Math.round((this.statistics.viewCount/daysPublished)*1000)/1000;
-		  outputData[i] += "|" + daysPublished + "|" + averageViewsPerDay;
+          publishedDate[i] = new Date(publishedDateTime[0]);
+		      var daysPublished = Math.round((currentDate.getTime()-publishedDate[i].getTime())/(1000*24*60*60));
+		      var averageViewsPerDay = Math.round((this.statistics.viewCount/daysPublished)*1000)/1000;
+		      outputData[i] += "|" + daysPublished + "|" + averageViewsPerDay;
           
           // If outputGraphList is true, then it'll display a graphs of views, estimatedMinutesWatched, averageViewDuration & averageViewPercentage for a selected video.
 		  var outputGraphList = false;
@@ -298,6 +303,16 @@ var lastMonth = new Date(today.getTime() - ONE_MONTH_IN_MILLISECONDS);
           // Increment counter for the output data so that it can be combined with other asynchronous calls later
           i++;
         });
+        // Loop through and retrieve the engagement metrics data for each video
+        var a = 0;
+        var timePeriod = 7;
+        for (var a in videoIds) {
+          	// Input the curent video, what order since it's executed asynchronously, start date of last month
+            queryVideoEngagement(videoIds[a], a, formatDateString(publishedDate[a]), 7);
+            queryVideoEngagement(videoIds[a], a, formatDateString(publishedDate[a]), 14);
+            queryVideoEngagement(videoIds[a], a, formatDateString(publishedDate[a]), 30);
+            queryVideoEngagement(videoIds[a], a, formatDateString(publishedDate[a]), 60);            
+         }
 
         if (videoList.children().length == 0) {
           // displayMessage('Your channel does not have any videos that have been viewed.');
@@ -308,14 +323,20 @@ var lastMonth = new Date(today.getTime() - ONE_MONTH_IN_MILLISECONDS);
   }
 
   // Query Engagement Metrics for an individual video over the past period of time
-  function queryVideoEngagement(videoId, count, startDate) {
+  function queryVideoEngagement(videoId, count, startDate, timePeriod) {
+    engagementData[count] = new Array();
     if (channelId) {
       // Channel Report data is at: https://developers.google.com/youtube/analytics/v1/channel_reports
       // Retrieve metrics for an individual video
+      var endDateTime = new Date(startDate);
+      millisecondOffset = timePeriod * 24 * 60 * 60 * 1000;
+      endDateTime.setTime(endDateTime.getTime() + millisecondOffset);
+      var endDate = formatDateString(endDateTime);
+ 
       var request = gapi.client.youtubeAnalytics.reports.query({
         // The start-date and end-date parameters need to be YYYY-MM-DD strings.
         'start-date': startDate,
-        'end-date': formatDateString(today),
+        'end-date': endDate,
         // A future YouTube Analytics API release should support channel==default.
         // In the meantime, you need to explicitly specify channel==channelId.
         // See https://devsite.googleplex.com/youtube/analytics/v1/#ids
@@ -328,8 +349,13 @@ var lastMonth = new Date(today.getTime() - ONE_MONTH_IN_MILLISECONDS);
         filters: 'video==' + videoId
       });
       
-      columnTitles = "title|viewCountTotal|likeCountTotal|favoriteCountTotal|commentCountTotal|dislikeCountTotal|id|publishedDate|publishedTime|tags|categoryId|privacyStatus|durationText|durationSeconds|daysPublished|averageViewsPerDay|views|estimatedMinutesWatched|averageViewDuration|averageViewPercentage|annotationClickThroughRate|annotationCloseRate|likes|dislikes|shares|comments|subscribersGained|subscribersLost";
-      $('#column-titles').html(columnTitles);
+      // console.log("TEST"); // These headers are written out 5 times
+      dataColumnTitles = "title|id|viewCountTotal|likeCountTotal|favoriteCountTotal|commentCountTotal|dislikeCountTotal|publishedDate|publishedTime|tags|categoryId|privacyStatus|durationText|durationSeconds|daysPublished|averageViewsPerDay";
+      engagementColumnTitles = "id|timePeriod|sufficientData|views|estimatedMinutesWatched|averageViewDuration|averageViewPercentage|annotationClickThroughRate|annotationCloseRate|likes|dislikes|shares|comments|subscribersGained|subscribersLost";
+      
+      $('#data-column-titles').html(dataColumnTitles);
+      $('#engagement-column-titles').html(engagementColumnTitles);
+            
       
       request.execute(function(response) {
         // This function is called regardless of whether the request succeeds.
@@ -340,34 +366,55 @@ var lastMonth = new Date(today.getTime() - ONE_MONTH_IN_MILLISECONDS);
           if (response.rows) {
           	// Convert averageViewDuration from seconds to minutes
           	response.rows[0][2] = Math.round(response.rows[0][2]*1000/60)/1000;
-            engagementData[count] = "|"+response.rows[0].join('|');
+            engagementData[count][timePeriod] = videoId + "|" + timePeriod + "|1|" + response.rows[0].join('|');
           } else {
-          	engagementData[count] = "|NO DATA";
+          	engagementData[count][timePeriod] = videoId + "|" + timePeriod + "|0";
           }
         }
         // Count the number of successfully completed engagement metric queries
         engagementCount++;
         var videoData = $('#video-data');
+        var videoEngagement07 = $('#video-engagement-07');
+        var videoEngagement14 = $('#video-engagement-14');
+        var videoEngagement30 = $('#video-engagement-30');
+        var videoEngagement60 = $('#video-engagement-60');
         // Engagement metric queries are executed asynchronously. Display data when all have completed
-        if (engagementCount == videoCount) {
+        if (engagementCount == videoCount
+        ) {
           // Reset the engagementCount counter for next and previous paginated calls
           engagementCount = 0;
           videoData.empty(); 
           // Contatenate the 30-day engagement data with the overall stats  
-          for (var i = 0; i < videoCount; i++) {
-			outputData[i] += engagementData[i];
-			// Create a new <li> element that contains an <a> element.
-			// Set the <a> element's text content to the video's title, and
-			// add a click handler that will display Analytics data when invoked.
-			var liElement = $('<li>');
-			// The dummy href value of '#' ensures that the browser renders the
-			// <a> element as a clickable link.
-			liElement.text(outputData[i]);
-			// Call the jQuery.append() method to add the new <a> element to
-			// the <li> element, and the <li> element to the parent
-			// list, which is identified by the 'videoList' variable.
-			videoData.append(liElement);
-		  }
+          for (var i = 0; i < videoCount/numberOfTimePeriods; i++) {
+            // In older versions, I combined the video metadata and lifetime statistics with the engagement data into one table
+			      //outputData[i] += engagementData[i];
+
+			      // Create a new <li> element that contains an <a> element.
+			      // Set the <a> element's text content to the video's title, and
+			      // add a click handler that will display Analytics data when invoked.
+			      var liDataElement = $('<li>');
+			      var liEngagementElement07 = $('<li>');
+			      var liEngagementElement14 = $('<li>');
+			      var liEngagementElement30 = $('<li>');
+			      var liEngagementElement60 = $('<li>');
+			      
+			      // The dummy href value of '#' ensures that the browser renders the
+			      // <a> element as a clickable link.
+			      liDataElement.text(outputData[i]);
+			      liEngagementElement07.text(engagementData[i][7]);
+			      liEngagementElement14.text(engagementData[i][14]);
+			      liEngagementElement30.text(engagementData[i][30]);
+			      liEngagementElement60.text(engagementData[i][60]);
+
+			      // Call the jQuery.append() method to add the new <a> element to
+			      // the <li> element, and the <li> element to the parent
+			      // list, which is identified by the 'videoList' variable.
+			      videoData.append(liDataElement);
+			      videoEngagement07.append(liEngagementElement07);
+			      videoEngagement14.append(liEngagementElement14);			      
+			      videoEngagement30.append(liEngagementElement30);
+			      videoEngagement60.append(liEngagementElement60);			      
+		      }
         }
       });
     } else {
