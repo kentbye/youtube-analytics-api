@@ -79,9 +79,9 @@ Note that the output of this program is more machine readable instead of human r
 
 **Sample import scripts**
 
-        LOAD DATA LOCAL INFILE '/Users/kentbye/Documents/videoexport.csv' INTO TABLE /`stats`.`videos` FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\r';
+        LOAD DATA LOCAL INFILE '/Users/kentbye/Documents/videoexport.csv' INTO TABLE `stats`.`videos` FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\r';
 
-        LOAD DATA LOCAL INFILE '/Users/kentbye/Documents/engagementexport.csv' INTO TABLE /`stats`.`engagement` FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\r';
+        LOAD DATA LOCAL INFILE '/Users/kentbye/Documents/engagementexport.csv' INTO TABLE `stats`.`engagement` FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\r';
 
 
 Note that LINES TERMINATED BY changes depending on where you copy from. It's `\r` if copying from Excel or `\n` if copied from the web browser.

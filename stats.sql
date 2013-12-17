@@ -21,7 +21,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 -- --------------------------------------------------------
 
 --
--- Table structure for table `engagement`
+-- Table structure for table `stats.engagement`
 --
 
 CREATE TABLE `engagement` (
@@ -45,7 +45,7 @@ CREATE TABLE `engagement` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `videos`
+-- Table structure for table `stats.videos`
 --
 
 CREATE TABLE `videos` (
