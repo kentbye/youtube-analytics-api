@@ -79,7 +79,7 @@ Note that the output of this program is more machine readable instead of human r
 
 **Sample import scripts**
 
-        LOAD DATA LOCAL INFILE '/Users/kentbye/Documents/videoexport.csv' INTO TABLE `stats`.`videos` FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n';
+        LOAD DATA LOCAL INFILE '/Users/kentbye/Documents/videoexport.csv' INTO TABLE `stats`.`videos` FIELDS TERMINATED BY '|' LINES TERMINATED BY '\n';
 
         LOAD DATA LOCAL INFILE '/Users/kentbye/Documents/engagementexport.csv' INTO TABLE `stats`.`engagement` FIELDS TERMINATED BY '|' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n';
 
